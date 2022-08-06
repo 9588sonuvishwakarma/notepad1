@@ -1,0 +1,123 @@
+from tkinter import *
+from tkinter.messagebox import showinfo
+from tkinter.filedialog import askopenfilename, asksaveasfilename
+import os
+import time
+
+
+times = time.asctime(time.localtime(time.time()))
+def newFile():
+    global file
+    root.title("untlted - Notepad with sonu") # to update new file
+    file = None #the file is reset
+    TextArea.delete(1.0,END) #to delete all text from starting to ending
+def Openfile():
+    global file
+    file = askopenfilename(defaultextension=".txt",filetypes=[("All Files","*.*"),("Text documents","*.txt")])#here *.* is for all file open of any type and *.txt is used for open txt file
+    if file =="": # blank file
+        file = None
+    else:
+        root.title(os.path.basename(file)+"-Notepad with sonu")
+        TextArea.delete(1.0,END)
+        f = open(file,"r")
+        TextArea.insert(1.0 , f.read()) # insert and delete both are oposite
+        f.close()
+
+def Savefile():
+    global file
+    if file == None:
+
+        file = asksaveasfilename(initialfile = "untitled.txt",defaultextension=".txt",filetypes=[("All Files","*.*")])# if file is none than we save the file in this way
+        if file == "": #file blank
+            file = None
+        else:
+            #save as new file
+           f = open(file,"w")
+           f.write(TextArea.get(1.0,END))
+           f.close()
+
+           root.title(os.path.basename(file) + "-Notepad with sonu")
+           print("file saved")
+
+    else:
+        f = open(file, "w")
+        f.write(TextArea.get(1.0, END))
+        f.close()
+
+
+
+def quitfile():
+    root.destroy()
+def cut():
+    TextArea.event_generate(("<<Cut>>"))
+def copy():
+    TextArea.event_generate(("<<Copy>>"))
+def paste():
+    TextArea.event_generate(("<<Paste>>"))
+def about():
+    showinfo("Notepad","Notepad by sonu vishwakarma ")
+
+
+if __name__ == '__main__':
+
+    #basic tkinter setup
+    root = Tk()
+    root.geometry("644x754")
+    # root.wm_iconbitmap("Pictures/dip.gif")
+    root.title("Notepad with SONU VISHWAKARMA" )
+
+#add textarea
+    TextArea = Text(root, font="lucida 10")
+    file = None
+    TextArea.pack(expand=True,fill=BOTH)
+
+    #create menubar
+    MenuBar = Menu(root)
+    m1 = Menu(MenuBar,tearoff=0)
+    # file menu start
+    #open new file
+    m1.add_command(label="New",command=newFile)
+    #to open already existing file
+    m1.add_command(label="Open", command=Openfile)
+    #to save the current file
+    m1.add_command(label="Save", command=Savefile)
+    m1.add_separator()
+    #to close app
+    m1.add_command(label="Exit", command=quitfile)
+    MenuBar.add_cascade(label="File",menu = m1)
+    #file menu end
+
+     # Edit(cut ,copy ,past) menu
+    m2 = Menu(MenuBar,tearoff=0)
+    m2.add_command(label="Cut",command=cut)
+    m2.add_command(label="Copy",command=copy)
+    m2.add_command(label="Paste",command=paste)
+    MenuBar.add_cascade(label="Edit",menu=m2)
+    #end edit menu
+
+    #help menu start
+    m3 = Menu(MenuBar,tearoff=0)
+    m3.add_command(label="About Notepad",command=about)
+    MenuBar.add_cascade(label="Help",menu=m3)
+
+    #help menu end
+
+    root.config(menu=MenuBar)
+
+    #adding scrollbar
+    sb = Scrollbar(TextArea)
+    sb.pack(side=RIGHT ,fill=Y)
+    sb.config(command=TextArea.yview)
+    TextArea.config(yscrollcommand=sb.set)
+
+    son = StringVar()
+    son.set("SONU VISHWAKARMA...                                                                         "
+            "                                                                                                                                                                                                                                                                                   |  Time:11:30  |                                                                     20/10/2021")
+    som = Label(root,textvariable=son ,relief=SUNKEN,anchor="w" ,fg="red")
+    som.pack(side=BOTTOM,fill=X)
+    Button(som,text=times,fg="green").pack() # self made
+
+
+
+    root.mainloop()
+
